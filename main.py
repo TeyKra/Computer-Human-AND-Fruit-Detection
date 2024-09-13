@@ -52,6 +52,31 @@ def draw_vertical_line_neck(image, pose_landmarks, face_landmarks, width, height
     # Tracer la ligne verticale du cou
     cv2.line(image, (x_neck, y_neck), (x_chin, y_chin), (0, 255, 0), 2)  # Ligne verte pour le cou
 
+# Fonction pour annoter les jambes, genoux, cuisses et tibias
+def annotate_legs(image, pose_landmarks, width, height):
+    leg_parts = {
+        "cuisse gauche": [mp_pose.PoseLandmark.LEFT_HIP, mp_pose.PoseLandmark.LEFT_KNEE],
+        "cuisse droite": [mp_pose.PoseLandmark.RIGHT_HIP, mp_pose.PoseLandmark.RIGHT_KNEE],
+        "tibia gauche": [mp_pose.PoseLandmark.LEFT_KNEE, mp_pose.PoseLandmark.LEFT_ANKLE],
+        "tibia droit": [mp_pose.PoseLandmark.RIGHT_KNEE, mp_pose.PoseLandmark.RIGHT_ANKLE],
+        "genoux gauche": [mp_pose.PoseLandmark.LEFT_KNEE],
+        "genoux droit": [mp_pose.PoseLandmark.RIGHT_KNEE]
+    }
+
+    for part, landmarks in leg_parts.items():
+        if len(landmarks) == 2:
+            x1 = int(pose_landmarks.landmark[landmarks[0]].x * width)
+            y1 = int(pose_landmarks.landmark[landmarks[0]].y * height)
+            x2 = int(pose_landmarks.landmark[landmarks[1]].x * width)
+            y2 = int(pose_landmarks.landmark[landmarks[1]].y * height)
+            x = (x1 + x2) // 2
+            y = (y1 + y2) // 2
+        else:
+            x = int(pose_landmarks.landmark[landmarks[0]].x * width)
+            y = int(pose_landmarks.landmark[landmarks[0]].y * height)
+        
+        cv2.putText(image, part, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+
 # Fonction pour annoter les épaules, cou et pectoraux
 def annotate_shoulders_neck_pectoral(image, pose_landmarks, width, height):
     body_parts = {
@@ -106,6 +131,20 @@ def annotate_arms(image, pose_landmarks, width, height):
             x = int(pose_landmarks.landmark[landmarks[0]].x * width)
             y = int(pose_landmarks.landmark[landmarks[0]].y * height)
         
+        cv2.putText(image, part, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+
+# Fonction pour annoter les talons et orteils
+def annotate_feet(image, pose_landmarks, width, height):
+    feet_parts = {
+        "talon gauche": mp_pose.PoseLandmark.LEFT_HEEL,
+        "talon droit": mp_pose.PoseLandmark.RIGHT_HEEL,
+        "orteil gauche": mp_pose.PoseLandmark.LEFT_FOOT_INDEX,
+        "orteil droit": mp_pose.PoseLandmark.RIGHT_FOOT_INDEX
+    }
+
+    for part, landmark in feet_parts.items():
+        x = int(pose_landmarks.landmark[landmark].x * width)
+        y = int(pose_landmarks.landmark[landmark].y * height)
         cv2.putText(image, part, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
 
 # Fonction pour annoter les doigts, paumes, poignets et phalanges
@@ -255,6 +294,8 @@ while cap.isOpened():
 
         annotate_arms(frame, result_pose.pose_landmarks, width, height)
         annotate_shoulders_neck_pectoral(frame, result_pose.pose_landmarks, width, height)
+        annotate_legs(frame, result_pose.pose_landmarks, width, height)
+        annotate_feet(frame, result_pose.pose_landmarks, width, height)  # Ajout de l'annotation pour les pieds
         
         # Tracer la ligne verticale du cou entre les épaules et le menton
         for face_landmarks in result_face.multi_face_landmarks:
