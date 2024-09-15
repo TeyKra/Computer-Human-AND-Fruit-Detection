@@ -12,8 +12,7 @@ class FruitDetector:
         # Mapping des classes pour les fruits courants
         self.fruit_classes = {
             47: 'Pomme',    # Apple
-            52: 'Banane',   # Banana
-            49: 'Orange',   # Orange
+            49: 'Orange'   # Orange
         }
 
         # Dictionnaire pour compter les fruits détectés
