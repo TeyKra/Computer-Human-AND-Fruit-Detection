@@ -1,20 +1,19 @@
 import cv2
 from human import HumanDetector
 from fruit import FruitDetector
-
 def main():
-    # Créer une instance des détecteurs
+    # Create instances of detectors
     human_detector = HumanDetector()
     fruit_detector = FruitDetector()
 
-    # Afficher un menu dans le terminal
-    print("Sélectionnez le mode de détection :")
-    print("1. Détection des humains")
-    print("2. Détection des fruits")
-    print("3. Détection des humains et des fruits")
-    choix = input("Entrez votre choix (1/2/3) : ")
+    # Display a menu in the terminal
+    print("Select detection mode:")
+    print("1. Human detection")
+    print("2. Fruit detection")
+    print("3. Human and fruit detection")
+    choice = input("Enter your choice (1/2/3): ")
 
-    # Ouvrir la webcam
+    # Open the webcam
     cap = cv2.VideoCapture(0)
 
     while cap.isOpened():
@@ -23,22 +22,22 @@ def main():
         if not ret:
             break
 
-        # Appliquer les détections en fonction du choix de l'utilisateur
-        if choix == '1':
+        # Apply detections based on the user's choice
+        if choice == '1':
             frame = human_detector.process_frame(frame)
-        elif choix == '2':
+        elif choice == '2':
             frame = fruit_detector.detect_fruits(frame)
-        elif choix == '3':
+        elif choice == '3':
             frame = human_detector.process_frame(frame)
             frame = fruit_detector.detect_fruits(frame)
         else:
-            print("Choix invalide. Veuillez relancer le programme et sélectionner une option valide.")
+            print("Invalid choice. Please restart the program and select a valid option.")
             break
 
-        # Afficher le frame annoté
-        cv2.imshow("Détection en cours", frame)
+        # Display the annotated frame
+        cv2.imshow("Detection in progress", frame)
 
-        # Quitter si 'q' est pressé
+        # Exit if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
